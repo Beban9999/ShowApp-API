@@ -1,6 +1,9 @@
 ﻿using AppApi.Models;
+using AppApi.Models.Post;
+using AppApi.Repository.Contract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
 using System.Data;
 
 namespace AppApi.Controllers
@@ -10,11 +13,15 @@ namespace AppApi.Controllers
     public class PostsController : Controller
     {
         private readonly string _connectionString;
+        private readonly IPostRepository _postRepository;
 
-        public PostsController(IConfiguration configuration)
+        public PostsController(IConfiguration configuration, IPostRepository postRepository)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _postRepository = postRepository;
         }
+
+        #region old_calls
         [HttpPost]
         public async Task<int> InsertPost([FromBody] PostsRequest postsRequest)
         {
@@ -64,5 +71,59 @@ namespace AppApi.Controllers
                 }
             }
         }
+        #endregion
+
+        #region new calls
+        [HttpGet("posts")]
+        public ActionResult<Response> Get_Posts(int? id)
+        {
+            Response response = new Response();
+            try
+            {
+                List<Post> posts = _postRepository.Get_Post(id);
+                response.Data = JsonConvert.SerializeObject(posts);
+                response.Status = RequestStatus.Success;
+                return Ok(response);
+            }
+            catch(Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("insert")]
+        public ActionResult<Response> Insert_Post([FromBody] PostsRequest postsRequest)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _postRepository.InsertPost(postsRequest);
+                if (resp.IsSuccessfull)
+                {
+                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Message = "Post successfully inserted!";
+                    response.Status = RequestStatus.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    response.Data = JsonConvert.SerializeObject(false);
+                    response.Message = resp.ErrorMessage;
+                    response.Status = RequestStatus.Error;
+                    return BadRequest(response);
+                }
+            }
+            catch(Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
+        #endregion
+
     }
 }
