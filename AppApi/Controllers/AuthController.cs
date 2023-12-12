@@ -9,12 +9,10 @@ namespace AppApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly string _connectionString;
         private IAuthRepository _authRepository;
 
-        public AuthController(IConfiguration configuration, IAuthRepository authRepository)
+        public AuthController(IAuthRepository authRepository)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
             _authRepository = authRepository;
         }
 
@@ -71,6 +69,55 @@ namespace AppApi.Controllers
                 }
             }
             catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpGet("isActive")]
+        public ActionResult<Response> CheckUserIsActive(string email)
+        {
+            Response response = new Response();
+            try
+            {
+                UserStatusRequest user = _authRepository.CheckUserIsActive(email);
+                response.Data = JsonConvert.SerializeObject(user);
+                response.Status = RequestStatus.Success;
+                return Ok(response);
+            }
+            catch(Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("login")]
+        public ActionResult<Response> LoginUser([FromBody] LoginRequest loginRequest)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _authRepository.LoginUser(loginRequest);
+                if (resp.IsSuccessfull)
+                {
+                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Message = "Login is successfull!";
+                    response.Status = RequestStatus.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    response.Data = JsonConvert.SerializeObject(false);
+                    response.Message = resp.ErrorMessage;
+                    response.Status = RequestStatus.Error;
+                    return BadRequest(response);
+                }
+            }
+            catch(Exception ex)
             {
                 response.Message = ex.Message;
                 response.Status = RequestStatus.Error;

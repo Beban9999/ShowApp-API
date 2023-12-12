@@ -2,6 +2,7 @@
 using AppApi.Models;
 using AppApi.Repository.Contract;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace AppApi.Repository
 {
@@ -11,6 +12,42 @@ namespace AppApi.Repository
         public AuthRepository(DbHelper dbHelper)
         {
             _dbHelper = dbHelper;
+        }
+
+        public RequestResponse RegisterUser(RegisterRequest registerRequest)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@pLogin", registerRequest.LoginName),
+                    new SqlParameter("@pFirstName", registerRequest.FirstName),
+                    new SqlParameter("@pLastName", registerRequest.LastName),
+                    new SqlParameter("@Email", registerRequest.Email),
+                    new SqlParameter("@pPassword", registerRequest.Password)
+                };
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "dbo.usp_AddUser");
+                if(resp == 1) 
+                {
+                    response.IsSuccessfull = true;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "User not registered!";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
         }
 
         public RequestResponse ActivateUser(int userId)
@@ -46,15 +83,25 @@ namespace AppApi.Repository
 
         public UserStatusRequest CheckUserIsActive(string email)
         {
-            throw new NotImplementedException();
+            UserStatusRequest userStatusRequest = new UserStatusRequest();
+
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter("email", email)
+            };
+
+            DataTable dt = _dbHelper.ExecProc(parameters, "usp_CheckUser");
+            if (dt.Rows.Count > 0)
+            {
+                userStatusRequest.UserID = DbTypeHelper.GetInt(dt.Rows[0], "UserId");
+                userStatusRequest.IsActive = DbTypeHelper.GetBool(dt.Rows[0], "IsActive");
+            }
+
+            return userStatusRequest;
         }
+
 
         public RequestResponse LoginUser(LoginRequest loginRequest)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RequestResponse RegisterUser(RegisterRequest registerRequest)
         {
             RequestResponse response = new RequestResponse();
 
@@ -62,27 +109,22 @@ namespace AppApi.Repository
             {
                 List<SqlParameter> parameters = new List<SqlParameter>
                 {
-                    new SqlParameter("@pLogin", registerRequest.LoginName),
-                    new SqlParameter("@pFirstName", registerRequest.FirstName),
-                    new SqlParameter("@pLastName", registerRequest.LastName),
-                    new SqlParameter("@Email", registerRequest.Email),
-                    new SqlParameter("@pPassword", registerRequest.Password)
-                    //response message
+                    new SqlParameter("@pLoginName", loginRequest.LoginName),
+                    new SqlParameter("@pPassword", loginRequest.Password)
                 };
 
-                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_AddUser");
-                if(resp == 1) 
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_Login");
+                if(resp == 1)
                 {
                     response.IsSuccessfull = true;
                 }
                 else
                 {
                     response.IsSuccessfull = false;
-                    response.ErrorMessage = "User not registered!";
+                    response.ErrorMessage = "Login name or password is invalid!";
                 }
-
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 response.IsSuccessfull = false;
                 response.ErrorMessage = ex.Message;

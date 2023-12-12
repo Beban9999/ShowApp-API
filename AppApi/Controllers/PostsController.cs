@@ -74,7 +74,7 @@ namespace AppApi.Controllers
         #endregion
 
         #region new calls
-        [HttpGet("posts")]
+        [HttpGet("get")]
         public ActionResult<Response> Get_Posts(int? id)
         {
             Response response = new Response();

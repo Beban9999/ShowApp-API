@@ -132,7 +132,7 @@ namespace AppApi.Controllers
             }
         }
 
-        [HttpGet("image")]
+        [HttpGet("get")]
         public ActionResult<Response> Get_Image(int id)
         {
             Response response = new Response();
