@@ -46,7 +46,7 @@ namespace AppApi.Controllers
             }
         }
 
-        [HttpPost("activate")]
+        [HttpGet("activate")]
         public ActionResult<Response> ActivateUser(int userId)
         {
             Response response = new Response();
@@ -114,10 +114,30 @@ namespace AppApi.Controllers
                     response.Data = JsonConvert.SerializeObject(false);
                     response.Message = resp.ErrorMessage;
                     response.Status = RequestStatus.Error;
-                    return BadRequest(response);
+                    return Ok(response);
                 }
             }
             catch(Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
+        [HttpGet("user")]
+        public ActionResult<Response> GetUser(string username)
+        {
+            Response response = new Response();
+            try
+            {
+                UserData resp = _authRepository.GetUser(username);
+                response.Data = JsonConvert.SerializeObject(resp);
+                response.Status = RequestStatus.Success;
+                return Ok(response);
+                
+            }
+            catch (Exception ex)
             {
                 response.Message = ex.Message;
                 response.Status = RequestStatus.Error;

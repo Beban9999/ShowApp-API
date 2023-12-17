@@ -61,7 +61,7 @@ namespace AppApi.Repository
                     new SqlParameter("@UserID", userId)
                 };
 
-                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_active_user");
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_ActivateUser");
                 if (resp == 1)
                 {
                     response.IsSuccessfull = true;
@@ -79,6 +79,27 @@ namespace AppApi.Repository
             }
 
             return response;
+        }
+
+        public UserData GetUser(string username)
+        {
+            UserData userData = new UserData();
+
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter("LoginName", username)
+            };
+
+            DataTable dt = _dbHelper.ExecProc(parameters, "usp_GetUser");
+            if (dt.Rows.Count > 0)
+            {
+                userData.LoginName = DbTypeHelper.GetString(dt.Rows[0], "LoginName");
+                userData.FirstName = DbTypeHelper.GetString(dt.Rows[0], "FirstName");
+                userData.LastName = DbTypeHelper.GetString(dt.Rows[0], "LastName");
+                userData.Email = DbTypeHelper.GetString(dt.Rows[0], "Email");
+            }
+
+            return userData;
         }
 
         public UserStatusRequest CheckUserIsActive(string email)
@@ -118,10 +139,15 @@ namespace AppApi.Repository
                 {
                     response.IsSuccessfull = true;
                 }
-                else
+                else if(resp == 0)
                 {
                     response.IsSuccessfull = false;
                     response.ErrorMessage = "Login name or password is invalid!";
+                }
+                else //Do verify here
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Activate";
                 }
             }
             catch(Exception ex)

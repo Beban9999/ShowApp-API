@@ -18,6 +18,16 @@
         public int UserID { get; set; }
     }
 
+    public class UserData
+    {
+        public string LoginName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }   
+        public bool IsActive { get; set; }
+        public bool isDeleted {  get; set; }
+    }
+
     public class PostsRequest
     {
         public string Title { get; set; }
