@@ -35,7 +35,7 @@ namespace AppApi.Controllers
                     response.Data = JsonConvert.SerializeObject(false);
                     response.Message = resp.ErrorMessage;
                     response.Status = RequestStatus.Error;
-                    return BadRequest(response);
+                    return Ok(response);
                 }
             }
             catch(Exception ex)

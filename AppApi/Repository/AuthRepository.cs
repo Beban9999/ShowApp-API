@@ -34,10 +34,20 @@ namespace AppApi.Repository
                 {
                     response.IsSuccessfull = true;
                 }
+                else if(resp == 2)
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Email already exists!";
+                }
+                else if (resp == 3)
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Username already exists!";
+                }
                 else
                 {
                     response.IsSuccessfull = false;
-                    response.ErrorMessage = "User not registered!";
+                    response.ErrorMessage = "Registration failed";
                 }
 
             }
