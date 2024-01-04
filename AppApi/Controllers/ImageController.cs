@@ -108,6 +108,8 @@ namespace AppApi.Controllers
             Response response = new Response();
             try
             {
+                //New call
+                //RequestResponse resp = _imageRepository.UploadMedia(images, post_id);
                 RequestResponse resp = _imageRepository.UploadImage(images, post_id);
                 if (resp.IsSuccessfull)
                 {

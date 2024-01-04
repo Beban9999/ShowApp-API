@@ -32,7 +32,84 @@ namespace AppApi.Repository
 
             return image;
         }
+        public RequestResponse UploadMedia(List<IFormFile> mediaData, int postId)
+        {
+            RequestResponse response = new RequestResponse();
 
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>();
+
+                if (mediaData != null && mediaData.Count != 0)
+                {
+                    foreach (var media in mediaData)
+                    {
+                        // Check if the media is an image or video based on its content type
+                        bool isImage = media.ContentType.ToLower().StartsWith("image");
+                        bool isVideo = media.ContentType.ToLower().StartsWith("video");
+
+                        if (isImage || isVideo)
+                        {
+                            // Store media on the server
+                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + media.FileName;
+                            string filePath = Path.Combine("../../../media", uniqueFileName);
+
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                media.CopyTo(stream);
+                            }
+
+                            // Add database parameters
+                            parameters.Add(new SqlParameter
+                            {
+                                ParameterName = "@FileName",
+                                SqlDbType = SqlDbType.NVarChar,
+                                Value = uniqueFileName
+                            });
+
+                            parameters.Add(new SqlParameter
+                            {
+                                ParameterName = "@IsImage",
+                                SqlDbType = SqlDbType.Bit,
+                                Value = isImage
+                            });
+
+                            parameters.Add(new SqlParameter
+                            {
+                                ParameterName = "@PostId",
+                                SqlDbType = SqlDbType.Int,
+                                Value = postId
+                            });
+
+                            // Execute stored procedure
+                            int resp = _dbHelper.ExecProcReturnScalar(parameters, "UploadMedia");
+
+                            if (resp == 1)
+                            {
+                                response.IsSuccessfull = true;
+                            }
+                            else
+                            {
+                                response.IsSuccessfull = false;
+                                response.ErrorMessage = "Media not inserted!";
+                            }
+                        }
+                        else
+                        {
+                            response.IsSuccessfull = false;
+                            response.ErrorMessage = "Unsupported media type";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
         public RequestResponse UploadImage(List<IFormFile> imageData, int postId)
         {
             RequestResponse response = new RequestResponse();
