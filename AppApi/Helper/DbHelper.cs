@@ -55,7 +55,7 @@ namespace AppApi.Helper
 
         public int ExecProcReturnScalar(List<SqlParameter> parameters, string procedure)
         {
-            var response = 0;
+            int response = 0;
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 try
@@ -89,6 +89,47 @@ namespace AppApi.Helper
             }
 
             return response;
+        }
+
+        public DataSet ExecDsProc(List<SqlParameter> parameters, string procedure)
+        {
+            DataSet ds = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        SqlDataAdapter sqlda = new SqlDataAdapter(command);
+                        command.CommandText = procedure;
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        foreach (SqlParameter parameter in parameters)
+                        {
+                            command.Parameters.Add(parameter);
+                        }
+
+                        sqlda.Fill(ds);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //logger
+                    return ds;
+                }
+                finally
+                {
+                    if (connection.State != ConnectionState.Closed)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return ds;
         }
 
 

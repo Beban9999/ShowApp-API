@@ -94,7 +94,7 @@ namespace AppApi.Controllers
         }
 
         [HttpPost("insert")]
-        public ActionResult<Response> Insert_Post([FromBody] PostsRequest postsRequest)
+        public ActionResult<Response> Insert_Post([FromBody] Post postsRequest)
         {
             Response response = new Response();
             try

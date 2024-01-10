@@ -65,5 +65,11 @@ namespace AppApi.Helper
 
             return returnValue;
         }
+
+        public static decimal GetDecimal(DataRow row, string column)
+        {
+            bool isNull = row.IsNull(column);
+            return isNull ? 0 : Convert.ToDecimal(row[column]);
+        }
     }
 }
