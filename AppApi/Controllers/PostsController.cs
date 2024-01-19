@@ -102,7 +102,7 @@ namespace AppApi.Controllers
                 RequestResponse resp = _postRepository.InsertPost(postsRequest);
                 if (resp.IsSuccessfull)
                 {
-                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Data = JsonConvert.SerializeObject(resp.Result);
                     response.Message = "Post successfully inserted!";
                     response.Status = RequestStatus.Success;
                     return Ok(response);

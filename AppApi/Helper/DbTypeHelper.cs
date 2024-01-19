@@ -35,6 +35,31 @@ namespace AppApi.Helper
             return result;
         }
 
+        public static long GetLong(DataRow row, string columnName)
+        {
+            bool columnIsNull = row.IsNull(columnName);
+
+            long result = 0;
+
+            if (columnIsNull)
+            {
+                result = -1;
+            }
+            else
+            {
+                try
+                {
+                    result = row.Field<Int64>(columnName);
+                }
+                catch (Exception)
+                {
+                    result = row.Field<Int64>(columnName);
+                }
+            }
+
+            return result;
+        }
+
         public static bool GetBool(DataRow row, string columnName)
         {
             bool returnValue = false;

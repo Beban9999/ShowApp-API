@@ -6,6 +6,7 @@
         public string? Title { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
-        public List<PostImage>? Images { get; set; }
+        public List<PostMedia>? Medias { get; set; }
+        public IFormCollection? Files { get; set; }
     }
 }
