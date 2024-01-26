@@ -14,6 +14,7 @@ namespace AppApi.Repository
         {
             _dbHelper = dbHelper;
         }
+
         public List<Post> Get_Post(int? id)
         {
             List<Post> posts = new List<Post>();

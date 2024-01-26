@@ -7,7 +7,7 @@ namespace AppApi.Repository.Contract
         public RequestResponse RegisterUser(RegisterRequest registerRequest);
         public RequestResponse ActivateUser(int userId);
         public UserStatusRequest CheckUserIsActive(string email);
-        public RequestResponse LoginUser(LoginRequest loginRequest);    
+        public Response LoginUser(LoginRequest loginRequest);    
         public UserData GetUser(string username);
     }
 }

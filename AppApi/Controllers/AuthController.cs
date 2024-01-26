@@ -1,5 +1,6 @@
 ﻿using AppApi.Models;
 using AppApi.Repository.Contract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -101,10 +102,10 @@ namespace AppApi.Controllers
             Response response = new Response();
             try
             {
-                RequestResponse resp = _authRepository.LoginUser(loginRequest);
-                if (resp.IsSuccessfull)
+                Response resp = _authRepository.LoginUser(loginRequest);
+                if (resp.Status == RequestStatus.Success)
                 {
-                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Data = JsonConvert.SerializeObject(resp.Data);
                     response.Message = "Login is successfull!";
                     response.Status = RequestStatus.Success;
                     return Ok(response);
@@ -112,7 +113,7 @@ namespace AppApi.Controllers
                 else
                 {
                     response.Data = JsonConvert.SerializeObject(false);
-                    response.Message = resp.ErrorMessage;
+                    response.Message = resp.Message;
                     response.Status = RequestStatus.Error;
                     return Ok(response);
                 }
@@ -125,6 +126,7 @@ namespace AppApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("user")]
         public ActionResult<Response> GetUser(string username)
         {

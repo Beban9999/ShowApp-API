@@ -2,16 +2,23 @@
 using AppApi.Models;
 using AppApi.Repository.Contract;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AppApi.Repository
 {
     public class AuthRepository : IAuthRepository
     {
         public DbHelper _dbHelper;
-        public AuthRepository(DbHelper dbHelper)
+        private IConfiguration _configuration;
+        public AuthRepository(DbHelper dbHelper, IConfiguration configuration)
         {
             _dbHelper = dbHelper;
+            _configuration = configuration;
         }
 
         public RequestResponse RegisterUser(RegisterRequest registerRequest)
@@ -131,10 +138,9 @@ namespace AppApi.Repository
             return userStatusRequest;
         }
 
-
-        public RequestResponse LoginUser(LoginRequest loginRequest)
+        public Response LoginUser(LoginRequest loginRequest)
         {
-            RequestResponse response = new RequestResponse();
+            Response response = new Response();
 
             try
             {
@@ -147,26 +153,64 @@ namespace AppApi.Repository
                 int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_Login");
                 if(resp == 1)
                 {
-                    response.IsSuccessfull = true;
+                    string token = GenerateJwtToken(loginRequest.LoginName);
+                    response.Data = token;
+                    response.Status = RequestStatus.Success;
                 }
                 else if(resp == 0)
                 {
-                    response.IsSuccessfull = false;
-                    response.ErrorMessage = "Login name or password is invalid!";
+                    response.Status = RequestStatus.Error;
+                    response.Message = "Login name or password is invalid!";
                 }
                 else //Do verify here
                 {
-                    response.IsSuccessfull = false;
-                    response.ErrorMessage = "Activate";
+                    response.Status = RequestStatus.Error;
+                    response.Message = "Activate";
                 }
             }
             catch(Exception ex)
             {
-                response.IsSuccessfull = false;
-                response.ErrorMessage = ex.Message;
+                response.Status = RequestStatus.Error;
+                response.Message = ex.Message;
             }
 
             return response;
         }
+
+
+
+        #region JwtHelper
+        private string GenerateJwtToken(string loginName)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.UniqueName, loginName),
+            };
+
+            var Sectoken = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+              _configuration["Jwt:Audience"],
+              claims,
+              expires: DateTime.Now.AddMinutes(120),
+              signingCredentials: credentials);
+
+            var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+            return token;
+        }
+
+        // Used one time to generate the jwt secret key, not inside the appsetting
+        private string GenerateRandomKey(int length)
+        {
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                byte[] keyBytes = new byte[length];
+                rng.GetBytes(keyBytes);
+                return Convert.ToBase64String(keyBytes);
+            }
+        }
+
+        #endregion
     }
 }
