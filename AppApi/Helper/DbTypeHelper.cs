@@ -7,7 +7,7 @@ namespace AppApi.Helper
         public static string? GetString(DataRow row, string columnName)
         {
             bool isNull = row.IsNull(columnName);
-            return isNull ? string.Empty : row.Field<string>(columnName);
+            return isNull ? string.Empty : row[columnName].ToString();
         }
 
         public static int GetInt(DataRow row, string columnName)

@@ -71,7 +71,8 @@ namespace AppApi.Repository
                 {
                     new SqlParameter("@Title", postsRequest.Title),
                     new SqlParameter("@Description", postsRequest.Description),
-                    new SqlParameter("@Price", postsRequest.Price)
+                    new SqlParameter("@Price", postsRequest.Price),
+                    new SqlParameter("@Username", postsRequest.User)
                 };
                 
                 int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_InsertPost");

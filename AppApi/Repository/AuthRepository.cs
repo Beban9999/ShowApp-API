@@ -110,6 +110,7 @@ namespace AppApi.Repository
             DataTable dt = _dbHelper.ExecProc(parameters, "usp_GetUser");
             if (dt.Rows.Count > 0)
             {
+                userData.UserId = DbTypeHelper.GetInt(dt.Rows[0], "UserId");
                 userData.LoginName = DbTypeHelper.GetString(dt.Rows[0], "LoginName");
                 userData.FirstName = DbTypeHelper.GetString(dt.Rows[0], "FirstName");
                 userData.LastName = DbTypeHelper.GetString(dt.Rows[0], "LastName");
@@ -162,7 +163,7 @@ namespace AppApi.Repository
                     response.Status = RequestStatus.Error;
                     response.Message = "Login name or password is invalid!";
                 }
-                else //Do verify here
+                else 
                 {
                     response.Status = RequestStatus.Error;
                     response.Message = "Activate";
