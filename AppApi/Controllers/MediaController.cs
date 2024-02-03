@@ -21,7 +21,7 @@ namespace AppApi.Controllers
         }
 
         [HttpPost("upload")]
-        public ActionResult<Response> Upload_Media([FromForm] Post post)
+        public ActionResult<Response> Upload_Media([FromForm] PostMediaRequest post)
         {
             Response response = new Response();
             try
