@@ -30,7 +30,7 @@ namespace AppApi.Repository
                     new SqlParameter("@PostId", postId)
                 };
 
-                DataTable dt = _dbHelper.ExecProc(parameters, "usp_CreateRoom");
+                DataTable dt = _dbHelper.ExecProcs(parameters, "usp_CreateRoom");
                 if (dt.Rows.Count > 0)
                 {
                     response.Status = RequestStatus.Success;
@@ -55,7 +55,7 @@ namespace AppApi.Repository
                 new SqlParameter("@Username", username)
             };
 
-            DataTable dt = _dbHelper.ExecProc(parameters, "usp_GetRoomMessages");
+            DataTable dt = _dbHelper.ExecProcs(parameters, "usp_GetRoomMessages");
 
             if (dt.Rows.Count > 0)
             {
@@ -86,7 +86,7 @@ namespace AppApi.Repository
                 new SqlParameter("@Username", username)
             };
 
-            DataTable dt = _dbHelper.ExecProc(parameters, "usp_GetUserRooms");
+            DataTable dt = _dbHelper.ExecProcs(parameters, "usp_GetUserRooms");
 
             if(dt.Rows.Count > 0)
             {
@@ -125,7 +125,7 @@ namespace AppApi.Repository
                     new SqlParameter("@Timestamp", timestamp)
                 };
 
-                DataTable dt = _dbHelper.ExecProc(parameters, "usp_InsertMessage");
+                DataTable dt = _dbHelper.ExecProcs(parameters, "usp_InsertMessage");
                 if (dt.Rows.Count > 0)
                 {
                     List<Message> messages = new List<Message>();

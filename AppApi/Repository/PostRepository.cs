@@ -23,7 +23,7 @@ namespace AppApi.Repository
                 new SqlParameter("@PostId", id ?? (object)DBNull.Value)
             };
 
-            DataTable dt = _dbHelper.ExecProc(parameters, "usp_GetPosts");
+            DataTable dt = _dbHelper.ExecProcs(parameters, "usp_GetPosts");
             if(dt.Rows.Count > 0)
             {
                 foreach (DataRow dr in dt.Rows)
@@ -39,7 +39,7 @@ namespace AppApi.Repository
                         new SqlParameter("@PostId", post.Id)
                     };
 
-                    DataTable dtMedia = _dbHelper.ExecProc(parameters, "usp_GetPostMedia");
+                    DataTable dtMedia = _dbHelper.ExecProcs(parameters, "usp_GetPostMedia");
                     if(dtMedia.Rows.Count > 0)
                     {
                         List<PostMedia> medias = new List<PostMedia>();

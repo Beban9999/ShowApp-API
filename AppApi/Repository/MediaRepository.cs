@@ -39,7 +39,7 @@ namespace AppApi.Repository
                         {
                             // Store media on the server
                             string fileName = media.FileName;
-                            string directoryPath = Path.Combine("/Users/vrusic/Developer/Projects/ShowApp-UI/media/" + postId);
+                            string directoryPath = Path.Combine("/Users/BEBAN/Work/AppTest/main/media/" + postId);
                             string filePath = Path.Combine(directoryPath, fileName);
 
                             if (!Directory.Exists(directoryPath))

@@ -1,5 +1,6 @@
 ﻿using AppApi.Helper;
 using AppApi.Models;
+using AppApi.Models.Post;
 using AppApi.Repository.Contract;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
@@ -107,7 +108,7 @@ namespace AppApi.Repository
                 new SqlParameter("LoginName", username)
             };
 
-            DataTable dt = _dbHelper.ExecProc(parameters, "usp_GetUser");
+            DataTable dt = _dbHelper.ExecProcs(parameters, "usp_GetUser");
             if (dt.Rows.Count > 0)
             {
                 userData.UserId = DbTypeHelper.GetInt(dt.Rows[0], "UserId");
@@ -129,7 +130,7 @@ namespace AppApi.Repository
                 new SqlParameter("email", email)
             };
 
-            DataTable dt = _dbHelper.ExecProc(parameters, "usp_CheckUser");
+            DataTable dt = _dbHelper.ExecProcs(parameters, "usp_CheckUser");
             if (dt.Rows.Count > 0)
             {
                 userStatusRequest.UserID = DbTypeHelper.GetInt(dt.Rows[0], "UserId");
@@ -177,6 +178,48 @@ namespace AppApi.Repository
 
             return response;
         }
+
+        public Artist GetArtistWithData(int artistId)
+        {
+            Artist artist = new Artist();
+            List<SqlParameter> parameters = new List<SqlParameter>
+    {
+        new SqlParameter("@ArtistId", artistId)
+    };
+
+            DataSet ds = _dbHelper.ExecDsProc(parameters, "usp_GetUserWithData");
+
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                DataRow dr = ds.Tables[0].Rows[0];
+                artist.Name = DbTypeHelper.GetString(dr, "Name");
+                artist.Type = DbTypeHelper.GetString(dr, "Type");
+                artist.Genre = DbTypeHelper.GetString(dr, "Genre");
+                artist.Description = DbTypeHelper.GetString(dr, "Description");
+                artist.Location = DbTypeHelper.GetString(dr, "Location");
+            }
+
+            if (ds.Tables.Count > 1 && ds.Tables[1].Rows.Count > 0)
+            {
+                List<PostMedia> medias = new List<PostMedia>();
+                foreach (DataRow drMedia in ds.Tables[1].Rows)
+                {
+                    PostMedia media = new PostMedia();
+                    media.PostId = DbTypeHelper.GetLong(drMedia, "PostId");
+                    media.FileName = DbTypeHelper.GetString(drMedia, "FileName");
+                    media.FileType = DbTypeHelper.GetString(drMedia, "FileType");
+                    // Assuming other properties are present in the PostMedia class
+                    medias.Add(media);
+                }
+                artist.PostMedias = medias;
+            }
+
+            return artist;
+        }
+
+
+
+
 
 
 

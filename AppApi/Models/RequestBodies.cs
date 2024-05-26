@@ -1,4 +1,6 @@
-﻿namespace AppApi.Models
+﻿using AppApi.Models.Post;
+
+namespace AppApi.Models
 {
     public class LoginRequest
     {
@@ -35,4 +37,20 @@
         public string Description { get; set; }  
         public decimal? Price { get; set; }
     }
+    public class Artist
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Genre { get; set; }
+        public string Description { get; set; }
+        public string Location { get; set; }
+        public List<PostMedia> PostMedias { get; set; }
+    }
+
+    //public class PostMedia
+    //{
+    //    public string FileName { get; set; }
+    //    public string FileType { get; set; }
+    //    public long PostId { get; set; }
+    //}
 }

@@ -12,7 +12,7 @@ namespace AppApi.Helper
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public DataTable ExecProc(List<SqlParameter> parameters, string procedure)
+        public DataTable ExecProcs(List<SqlParameter> parameters, string procedure)
         {
             DataTable dt = new DataTable();
 
