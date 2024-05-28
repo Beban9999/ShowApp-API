@@ -10,6 +10,7 @@ namespace AppApi.Repository.Contract
 		public List<Message> GetRoomMessages(int roomId, string username);
 		public Response InsertMessage(int roomId, string senderId, string content, string date, string timestamp);
 		public Response CreateRoom(int postId, int senderId);
+		public int GetUserUnreadMessages(string username);
 	}
 }
 

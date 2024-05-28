@@ -117,7 +117,25 @@ namespace AppApi.Controllers
             }
         }
 
+        [HttpGet("getunreadmessages")]
+        public ActionResult<Response> GetUserUnereadMessages(string username)
+        {
+            Response response = new Response();
+            try
+            {
+                int resp = _messageRepository.GetUserUnreadMessages(username);
+                response.Data = JsonConvert.SerializeObject(resp);
+                response.Status = RequestStatus.Success;
+                return Ok(response);
 
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
 
     }
 }

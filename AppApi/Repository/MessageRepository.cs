@@ -156,6 +156,18 @@ namespace AppApi.Repository
 
             return response;
         }
+
+        public int GetUserUnreadMessages(string username)
+        {
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@Username", username)
+            };
+
+            int result = _dbHelper.ExecProcReturnScalar(parameters, "usp_GetUserUnreadMessages");
+
+            return result;
+        }
     }
 }
 
