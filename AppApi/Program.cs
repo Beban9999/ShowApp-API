@@ -1,4 +1,6 @@
+using System.Net.WebSockets;
 using System.Text;
+using AppApi.Handlers;
 using AppApi.Helper;
 using AppApi.Repository;
 using AppApi.Repository.Contract;
@@ -56,6 +58,34 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseWebSockets();
+
+app.Map("/ws", builder =>
+{
+    builder.UseMiddleware<WebSocketMiddleware>();
+});
+//app.Use(async (context, next) =>
+//{
+//    if (context.Request.Path == "/ws")
+//    {
+//        if (context.WebSockets.IsWebSocketRequest)
+//        {
+//            using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+//            await webSocket.SendAsync(Encoding.UTF8.GetBytes("test"), WebSocketMessageType.Text, true, CancellationToken.None);
+//        }
+//        else
+//        {
+//            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+//        }
+//    }
+//    else
+//    {
+//        await next(context);
+//    }
+
+//});
+
 
 app.UseHttpsRedirection();
 

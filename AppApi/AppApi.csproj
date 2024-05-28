@@ -19,8 +19,10 @@
 
   <ItemGroup>
     <None Remove="Models\Chat\" />
+    <None Remove="Handlers\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\Chat\" />
+    <Folder Include="Handlers\" />
   </ItemGroup>
 </Project>
