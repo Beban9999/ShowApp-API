@@ -6,11 +6,11 @@ namespace AppApi.Repository.Contract
 {
 	public interface IMessageRepository
 	{
-		public List<Room> GetUserRooms(string username);
-		public List<Message> GetRoomMessages(int roomId, string username);
+		public List<Room> GetUserRooms(int userId);
+		public List<Message> GetRoomMessages(int roomId, int userId);
 		public Response InsertMessage(int roomId, string senderId, string content, string date, string timestamp);
 		public Response CreateRoom(int postId, int senderId);
-		public int GetUserUnreadMessages(string username);
+		public int GetUserUnreadMessages(int userId);
 	}
 }
 

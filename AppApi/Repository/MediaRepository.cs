@@ -15,20 +15,25 @@ namespace AppApi.Repository
 			_dbHelper = dbHelper;
 		}
 
-        public RequestResponse UploadMedia(IFormFileCollection? mediaData, int postId)
+        public RequestResponse UploadMedia(IFormFileCollection? mediaData, int userId, bool isProfile, int? postId)
         {
             RequestResponse response = new RequestResponse();
 
             try
             {
-                List<SqlParameter> parameters = new List<SqlParameter>();
+                List<SqlParameter> parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@IsProfile", isProfile),
+                    new SqlParameter("@UserId", userId),
+                    new SqlParameter("@PostId", postId)
+                };
 
                 if (mediaData != null && mediaData.Count != 0)
                 {
-                    DataTable dtPostFiles = new DataTable();
-                    dtPostFiles.Columns.Add(new DataColumn("FileName", typeof(string)));
-                    dtPostFiles.Columns.Add(new DataColumn("FileType", typeof(string)));
-                    dtPostFiles.Columns.Add(new DataColumn("PostId", typeof(long)));
+                    DataTable dtFiles = new DataTable();
+                    dtFiles.Columns.Add(new DataColumn("FileName", typeof(string)));
+                    dtFiles.Columns.Add(new DataColumn("FileType", typeof(string)));
+                    dtFiles.Columns.Add(new DataColumn("UserId", typeof(long)));
                     foreach (var media in mediaData)
                     {
                         // Check if the media is an image or video based on its content type
@@ -39,7 +44,7 @@ namespace AppApi.Repository
                         {
                             // Store media on the server
                             string fileName = media.FileName;
-                            string directoryPath = Path.Combine("/Users/BEBAN/Work/AppTest/main/media/" + postId);
+                            string directoryPath = Path.Combine("/Users/vrusic/Developer/Projects/ShowApp-UI/media/" + userId);
                             string filePath = Path.Combine(directoryPath, fileName);
 
                             if (!Directory.Exists(directoryPath))
@@ -53,11 +58,11 @@ namespace AppApi.Repository
                             }
 
                             // Add database parameters
-                            DataRow dr = dtPostFiles.NewRow();
+                            DataRow dr = dtFiles.NewRow();
                             dr["FileName"] = media.FileName;
                             dr["FileType"] = media.ContentType;
-                            dr["PostId"] = postId;
-                            dtPostFiles.Rows.Add(dr);
+                            dr["UserId"] = userId;
+                            dtFiles.Rows.Add(dr);
                         }
                         else
                         {
@@ -67,12 +72,12 @@ namespace AppApi.Repository
                         }
                     }
 
-                    SqlParameter fileParameter = new SqlParameter("@PostMediaData", SqlDbType.Structured);
-                    fileParameter.Value = dtPostFiles;
-                    fileParameter.TypeName = "[dbo].[PostFile]";
+                    SqlParameter fileParameter = new SqlParameter("@Media", SqlDbType.Structured);
+                    fileParameter.Value = dtFiles;
+                    fileParameter.TypeName = "[dbo].[MediaFile]";
                     parameters.Add(fileParameter);
 
-                    int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_InsertPostMedia");
+                    int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_InsertArtistMedia");
                     if (resp != 0)
                     {
                         response.IsSuccessfull = true;
@@ -80,7 +85,7 @@ namespace AppApi.Repository
                     else
                     {
                         response.IsSuccessfull = false;
-                        response.ErrorMessage = "Post media not inserted!";
+                        response.ErrorMessage = "Media not inserted!";
                     }
                 }
                 else

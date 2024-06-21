@@ -1,4 +1,5 @@
 ﻿using AppApi.Models;
+using AppApi.Models.Artist;
 using AppApi.Repository.Contract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -77,25 +78,6 @@ namespace AppApi.Controllers
             }
         }
 
-        [HttpGet("GetArtistWithData")]
-        public ActionResult<Response> GetArtistWithData(int ArtistId)
-        {
-            Response response = new Response();
-            try
-            {
-                Artist user = _authRepository.GetArtistWithData(ArtistId);
-                response.Data = JsonConvert.SerializeObject(user);
-                response.Status = RequestStatus.Success;
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-                response.Status = RequestStatus.Error;
-                return BadRequest(response);
-            }
-        }
-
         [HttpGet("isActive")]
         public ActionResult<Response> CheckUserIsActive(string email)
         {
@@ -165,7 +147,6 @@ namespace AppApi.Controllers
                 return BadRequest(response);
             }
         }
-
 
     }
 }

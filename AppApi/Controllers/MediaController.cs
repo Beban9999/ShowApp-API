@@ -1,5 +1,6 @@
 ﻿using System;
 using AppApi.Models;
+using AppApi.Models.Artist;
 using AppApi.Models.Post;
 using AppApi.Repository.Contract;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace AppApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MediaController : ControllerBase
@@ -21,12 +22,12 @@ namespace AppApi.Controllers
         }
 
         [HttpPost("upload")]
-        public ActionResult<Response> Upload_Media([FromForm] PostMediaRequest post)
+        public ActionResult<Response> Upload_Media([FromForm] ArtistMediaRequest request)
         {
             Response response = new Response();
             try
             {
-                RequestResponse resp = _imageRepository.UploadMedia(post.Files?.Files, post.Id);
+                RequestResponse resp = _imageRepository.UploadMedia(request.Files?.Files, request.Id, request.IsProfile, request.PostId);
                 if (resp.IsSuccessfull)
                 {
                     response.Data = JsonConvert.SerializeObject(true);
@@ -49,7 +50,6 @@ namespace AppApi.Controllers
                 return BadRequest(response);
             }
         }
-
 
     }
 }

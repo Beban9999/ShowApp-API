@@ -26,7 +26,9 @@ namespace AppApi.Models
         public string LoginName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Email { get; set; }   
+        public string Email { get; set; }
+        public string Avatar { get; set; }
+        public bool IsArtist { get; set; }
         public bool IsActive { get; set; }
         public bool isDeleted {  get; set; }
     }
@@ -36,15 +38,6 @@ namespace AppApi.Models
         public string Title { get; set; }
         public string Description { get; set; }  
         public decimal? Price { get; set; }
-    }
-    public class Artist
-    {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Genre { get; set; }
-        public string Description { get; set; }
-        public string Location { get; set; }
-        public List<PostMedia> PostMedias { get; set; }
     }
 
     //public class PostMedia

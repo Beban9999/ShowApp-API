@@ -18,7 +18,7 @@ namespace AppApi.Repository
             _dbHelper = dbHelper;
         }
 
-        public Response CreateRoom(int postId, int senderId)
+        public Response CreateRoom(int receiverId, int senderId)
         {
             Response response = new Response();
 
@@ -27,14 +27,14 @@ namespace AppApi.Repository
                 List<SqlParameter> parameters = new List<SqlParameter>
                 {
                     new SqlParameter("@SenderId", senderId),
-                    new SqlParameter("@PostId", postId)
+                    new SqlParameter("@ReceiverId", receiverId)
                 };
 
-                DataTable dt = _dbHelper.ExecProcs(parameters, "usp_CreateRoom");
-                if (dt.Rows.Count > 0)
+                int result = _dbHelper.ExecProcReturnScalar(parameters, "usp_CreateRoom");
+                if (result > 0)
                 {
                     response.Status = RequestStatus.Success;
-                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Data = result.ToString();
                 }
             }
             catch (Exception ex)
@@ -46,13 +46,13 @@ namespace AppApi.Repository
             return response;
         }
 
-        public List<Message> GetRoomMessages(int roomId, string username)
+        public List<Message> GetRoomMessages(int roomId, int userId)
         {
             List<Message> messages = new List<Message>();
             List<SqlParameter> parameters = new List<SqlParameter>
             {
                 new SqlParameter("@RoomId", roomId),
-                new SqlParameter("@Username", username)
+                new SqlParameter("@UserId", userId)
             };
 
             DataTable dt = _dbHelper.ExecProcs(parameters, "usp_GetRoomMessages");
@@ -78,12 +78,12 @@ namespace AppApi.Repository
             return messages;
         }
 
-        public List<Room> GetUserRooms(string username)
+        public List<Room> GetUserRooms(int userId)
         {
             List<Room> rooms = new List<Room>();
             List<SqlParameter> parameters = new List<SqlParameter>
             {
-                new SqlParameter("@Username", username)
+                new SqlParameter("@UserId", userId)
             };
 
             DataTable dt = _dbHelper.ExecProcs(parameters, "usp_GetUserRooms");
@@ -157,11 +157,11 @@ namespace AppApi.Repository
             return response;
         }
 
-        public int GetUserUnreadMessages(string username)
+        public int GetUserUnreadMessages(int userId)
         {
             List<SqlParameter> parameters = new List<SqlParameter>
             {
-                new SqlParameter("@Username", username)
+                new SqlParameter("@UserId", userId)
             };
 
             int result = _dbHelper.ExecProcReturnScalar(parameters, "usp_GetUserUnreadMessages");

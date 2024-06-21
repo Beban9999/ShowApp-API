@@ -12,7 +12,7 @@ namespace AppApi.Helper
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public DataTable ExecProcs(List<SqlParameter> parameters, string procedure)
+        public DataTable ExecProcs(List<SqlParameter>? parameters, string procedure)
         {
             DataTable dt = new DataTable();
 
@@ -28,9 +28,12 @@ namespace AppApi.Helper
                         command.CommandText = procedure;
                         command.CommandType = CommandType.StoredProcedure;
 
-                        foreach (SqlParameter parameter in parameters)
+                        if (parameters != null)
                         {
-                            command.Parameters.Add(parameter);
+                            foreach (SqlParameter parameter in parameters)
+                            {
+                                command.Parameters.Add(parameter);
+                            }
                         }
 
                         sqla.Fill(dt);

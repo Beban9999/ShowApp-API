@@ -1,6 +1,7 @@
 ﻿using AppApi.Helper;
 using AppApi.Models;
 using AppApi.Models.Post;
+using AppApi.Models.Artist;
 using AppApi.Repository.Contract;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
@@ -116,6 +117,9 @@ namespace AppApi.Repository
                 userData.FirstName = DbTypeHelper.GetString(dt.Rows[0], "FirstName");
                 userData.LastName = DbTypeHelper.GetString(dt.Rows[0], "LastName");
                 userData.Email = DbTypeHelper.GetString(dt.Rows[0], "Email");
+                userData.Avatar = DbTypeHelper.GetString(dt.Rows[0], "Avatar");
+                userData.IsActive = DbTypeHelper.GetBool(dt.Rows[0], "IsActive");
+                userData.IsArtist = DbTypeHelper.GetBool(dt.Rows[0], "IsArtist");
             }
 
             return userData;
@@ -178,49 +182,6 @@ namespace AppApi.Repository
 
             return response;
         }
-
-        public Artist GetArtistWithData(int artistId)
-        {
-            Artist artist = new Artist();
-            List<SqlParameter> parameters = new List<SqlParameter>
-    {
-        new SqlParameter("@ArtistId", artistId)
-    };
-
-            DataSet ds = _dbHelper.ExecDsProc(parameters, "usp_GetUserWithData");
-
-            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                DataRow dr = ds.Tables[0].Rows[0];
-                artist.Name = DbTypeHelper.GetString(dr, "Name");
-                artist.Type = DbTypeHelper.GetString(dr, "Type");
-                artist.Genre = DbTypeHelper.GetString(dr, "Genre");
-                artist.Description = DbTypeHelper.GetString(dr, "Description");
-                artist.Location = DbTypeHelper.GetString(dr, "Location");
-            }
-
-            if (ds.Tables.Count > 1 && ds.Tables[1].Rows.Count > 0)
-            {
-                List<PostMedia> medias = new List<PostMedia>();
-                foreach (DataRow drMedia in ds.Tables[1].Rows)
-                {
-                    PostMedia media = new PostMedia();
-                    media.PostId = DbTypeHelper.GetLong(drMedia, "PostId");
-                    media.FileName = DbTypeHelper.GetString(drMedia, "FileName");
-                    media.FileType = DbTypeHelper.GetString(drMedia, "FileType");
-                    // Assuming other properties are present in the PostMedia class
-                    medias.Add(media);
-                }
-                artist.PostMedias = medias;
-            }
-
-            return artist;
-        }
-
-
-
-
-
 
 
         #region JwtHelper

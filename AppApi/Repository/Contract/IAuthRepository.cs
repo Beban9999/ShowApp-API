@@ -1,4 +1,5 @@
 ﻿using AppApi.Models;
+using AppApi.Models.Artist;
 
 namespace AppApi.Repository.Contract
 {
@@ -9,6 +10,5 @@ namespace AppApi.Repository.Contract
         public UserStatusRequest CheckUserIsActive(string email);
         public Response LoginUser(LoginRequest loginRequest);    
         public UserData GetUser(string username);
-        public Artist GetArtistWithData(int artistId);
     }
 }
