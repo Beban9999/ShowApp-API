@@ -110,6 +110,7 @@ namespace AppApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("insertpost")]
         public ActionResult<Response> InsertPost([FromBody] ArtistPostRequest request)
         {
@@ -120,7 +121,7 @@ namespace AppApi.Controllers
                 if (resp.IsSuccessfull)
                 {
                     response.Data = resp.Result.ToString();
-                    response.Message = "Artist successfully created!";
+                    response.Message = "Post successfully inserted!";
                     response.Status = RequestStatus.Success;
                     return Ok(response);
                 }
@@ -140,6 +141,36 @@ namespace AppApi.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("removepost")]
+        public ActionResult<Response> RemovePost([FromBody] IdRequest request)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _artistRepository.RemovePost(request.Id);
+                if (resp.IsSuccessfull)
+                {
+                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Message = "Post successfully removed!";
+                    response.Status = RequestStatus.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    response.Data = JsonConvert.SerializeObject(false);
+                    response.Message = resp.ErrorMessage;
+                    response.Status = RequestStatus.Error;
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
 
     }
 

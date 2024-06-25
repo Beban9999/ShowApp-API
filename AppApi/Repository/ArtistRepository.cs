@@ -233,6 +233,40 @@ namespace AppApi.Repository
             return response;
 
         }
+
+        public RequestResponse RemovePost(int postId)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                 {
+                    new SqlParameter("@PostId", postId)
+
+                };
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_RemovePost");
+                if (resp != 0)
+                {
+                    response.IsSuccessfull = true;
+                    response.Result = resp;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Post not removed!";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
     }
 }
 

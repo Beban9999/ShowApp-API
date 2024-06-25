@@ -11,6 +11,7 @@ namespace AppApi.Repository.Contract
         public List<ArtistType> GetArtistTypes();
         public List<ArtistGenre> GetArtistGenres();
         public RequestResponse InsertPost(ArtistPostRequest post);
+        public RequestResponse RemovePost(int postId);
     }
 }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using AppApi.Models;
 using AppApi.Models.Artist;
-using AppApi.Models.Post;
 using AppApi.Repository.Contract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace AppApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MediaController : ControllerBase
