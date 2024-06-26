@@ -172,6 +172,37 @@ namespace AppApi.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("removeartist")]
+        public ActionResult<Response> RemoveArtist([FromBody] IdRequest request)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _artistRepository.RemoveArtist(request.Id);
+                if (resp.IsSuccessfull)
+                {
+                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Message = "Artist successfully removed!";
+                    response.Status = RequestStatus.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    response.Data = JsonConvert.SerializeObject(false);
+                    response.Message = resp.ErrorMessage;
+                    response.Status = RequestStatus.Error;
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
     }
 
 }

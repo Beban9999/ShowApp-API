@@ -267,6 +267,40 @@ namespace AppApi.Repository
 
             return response;
         }
+
+        public RequestResponse RemoveArtist(int userId)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                 {
+                    new SqlParameter("@UserId", userId)
+
+                };
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_RemoveArtist");
+                if (resp != 0)
+                {
+                    response.IsSuccessfull = true;
+                    response.Result = resp;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Artist not removed!";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
     }
 }
 
