@@ -183,6 +183,70 @@ namespace AppApi.Repository
             return response;
         }
 
+        public RequestResponse ValidateField(string fieldName, string fieldValue)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@fieldName", fieldName),
+                    new SqlParameter("@fieldValue", fieldValue)
+                };
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_CheckFields");
+                if (resp == 1)
+                {
+                    response.IsSuccessfull = true;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = (fieldName == "username") ? "Username already exists" : "Email already exists";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
+
+        public RequestResponse CheckPassword(int userId, string password)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@UserId", userId),
+                    new SqlParameter("@Password", password)
+                };
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_CheckChangePassword");
+                if (resp == 1)
+                {
+                    response.IsSuccessfull = true;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Password is not correct";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
+
 
         #region JwtHelper
         private string GenerateJwtToken(string loginName)

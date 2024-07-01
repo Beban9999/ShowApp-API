@@ -148,5 +148,46 @@ namespace AppApi.Controllers
             }
         }
 
+        //[Authorize]
+        [HttpGet("validate")]
+        public ActionResult<Response> Validate(string fieldName, string fieldValue)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _authRepository.ValidateField(fieldName, fieldValue);
+                response.Data = JsonConvert.SerializeObject(resp);
+                response.Status = RequestStatus.Success;
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+        [HttpGet("checkPassword")]
+        public ActionResult<Response> PasswordCheck(int userId, string password)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _authRepository.CheckPassword(userId, password);
+                response.Data = JsonConvert.SerializeObject(resp);
+                response.Status = RequestStatus.Success;
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
+
     }
 }
