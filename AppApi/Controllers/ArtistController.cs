@@ -110,6 +110,36 @@ namespace AppApi.Controllers
             }
         }
 
+        [HttpPost("update")]
+        public ActionResult<Response> UpdateArtist([FromBody] UpdateRequest request)
+        {
+            Response response = new Response();
+            try
+            {
+                RequestResponse resp = _artistRepository.UpdateArtist(request);
+                if (resp.IsSuccessfull)
+                {
+                    response.Data = JsonConvert.SerializeObject(true);
+                    response.Message = "Artist successfully created!";
+                    response.Status = RequestStatus.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    response.Data = JsonConvert.SerializeObject(false);
+                    response.Message = resp.ErrorMessage;
+                    response.Status = RequestStatus.Error;
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                response.Status = RequestStatus.Error;
+                return BadRequest(response);
+            }
+        }
+
         [Authorize]
         [HttpPost("insertpost")]
         public ActionResult<Response> InsertPost([FromBody] ArtistPostRequest request)

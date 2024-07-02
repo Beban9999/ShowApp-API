@@ -7,6 +7,7 @@ using AppApi.Models.Artist;
 using AppApi.Repository.Contract;
 using Microsoft.Data.SqlClient;
 using Azure.Core;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace AppApi.Repository
 {
@@ -186,6 +187,64 @@ namespace AppApi.Repository
                 {
                     response.IsSuccessfull = false;
                     response.ErrorMessage = "Artist not created!";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
+
+        public RequestResponse UpdateArtist(UpdateRequest request)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@FirstName", request.FirstName),
+                    new SqlParameter("@LastName", request.LastName),
+                    new SqlParameter("@UserName", request.UserName),
+                    new SqlParameter("@Email", request.Email),
+                    new SqlParameter("@OldPassword", request.OldPassword),
+                    new SqlParameter("@NewPassword", request.NewPassword),
+                    new SqlParameter("@ArtistName", request.ArtistName),
+                    new SqlParameter("@Location", request.Location),
+                    new SqlParameter("@Description", request.Description),
+                    new SqlParameter("@Type", request.Type),
+                    new SqlParameter("@UserId", request.UserId),
+                    new SqlParameter("@IsArtist", request.IsArtist)
+                };
+
+
+                DataTable dtGenres = new DataTable();
+                dtGenres.Columns.Add(new DataColumn("Id", typeof(int)));
+                foreach (var genre in request.Genre)
+                {
+                    DataRow dr = dtGenres.NewRow();
+                    dr["Id"] = genre;
+                    dtGenres.Rows.Add(dr);
+                }
+
+                SqlParameter genreParamter = new SqlParameter("@Genre", SqlDbType.Structured);
+                genreParamter.Value = dtGenres;
+                genreParamter.TypeName = "[dbo].[Ids]";
+                parameters.Add(genreParamter);
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_UpdateArtist");
+                if (resp != 0)
+                {
+                    response.IsSuccessfull = true;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Artist not updated!";
                 }
 
             }
