@@ -13,8 +13,8 @@ namespace AppApi.Repository.Contract
         public RequestResponse InsertPost(ArtistPostRequest post);
         public RequestResponse RemovePost(int postId);
         public RequestResponse RemoveArtist(int userId);
-
         public RequestResponse UpdateArtist(UpdateRequest request);
+        public RequestResponse InsertDate(ArtistDate request);
     }
 }
 

@@ -9,6 +9,7 @@ namespace AppApi.Models.Artist
         {
             Genres = new List<string>();
             Posts = new List<ArtistPost>();
+            Dates = new List<DateOnly>();
         }
 
         public int UserId { get; set; }
@@ -19,6 +20,7 @@ namespace AppApi.Models.Artist
         public string Location { get; set; }
         public string Avatar { get; set; }
         public List<string> Genres { get; set; }
+        public List<DateOnly> Dates { get; set; }
         public List<ArtistPost> Posts { get; set; }
     }
 }

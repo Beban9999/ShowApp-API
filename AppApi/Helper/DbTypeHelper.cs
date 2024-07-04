@@ -96,5 +96,30 @@ namespace AppApi.Helper
             bool isNull = row.IsNull(column);
             return isNull ? 0 : Convert.ToDecimal(row[column]);
         }
+
+        public static DateOnly GetDateOnly(DataRow row, string columnName, DateOnly defaultValue = default)
+        {
+            if (row.IsNull(columnName))
+            {
+                return defaultValue;
+            }
+
+            try
+            {
+                return DateOnly.FromDateTime(row.Field<DateTime>(columnName));
+            }
+            catch (InvalidCastException)
+            {
+                try
+                {
+                    return DateOnly.FromDateTime(Convert.ToDateTime(row[columnName]));
+                }
+                catch
+                {
+                    return defaultValue;
+                }
+            }
+        }
     }
+
 }

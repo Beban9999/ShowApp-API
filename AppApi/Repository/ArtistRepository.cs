@@ -63,12 +63,27 @@ namespace AppApi.Repository
                     }
                 }
 
+                if(ds.Tables.Count > 2 && ds.Tables[2].Rows.Count > 0)
+                {
+                    foreach (DataRow dr in ds.Tables[2].Rows)
+                    {
+                        int id = DbTypeHelper.GetInt(dr, "UserID");
+                        DateOnly date = DbTypeHelper.GetDateOnly(dr, "ReservedDate");
+
+                        Artist artist = artists.FirstOrDefault(a => a.UserId == id);
+                        if (artist != null)
+                        {
+                            artist.Dates.Add(date);
+                        }
+                    }
+                }
+
                 if(userId != null)
                 {
-                    if(ds.Tables.Count > 2 && ds.Tables[2].Rows.Count > 0)
+                    if(ds.Tables.Count > 3 && ds.Tables[3].Rows.Count > 0)
                     {
                         List<ArtistPost> posts = new List<ArtistPost>();
-                        foreach (DataRow dr in ds.Tables[2].Rows)
+                        foreach (DataRow dr in ds.Tables[3].Rows)
                         {
                             ArtistPost post = new ArtistPost();
                             post.Id = DbTypeHelper.GetInt(dr, "Id");
@@ -79,9 +94,9 @@ namespace AppApi.Repository
                             posts.Add(post);
                         }
 
-                        if(ds.Tables.Count > 3 && ds.Tables[3].Rows.Count > 0)
+                        if(ds.Tables.Count > 4 && ds.Tables[4].Rows.Count > 0)
                         {
-                            foreach (DataRow dr in ds.Tables[3].Rows)
+                            foreach (DataRow dr in ds.Tables[4].Rows)
                             {
                                 ArtistMedia media = new ArtistMedia();
                                 media.FileName = DbTypeHelper.GetString(dr, "FileName");
@@ -334,7 +349,7 @@ namespace AppApi.Repository
             try
             {
                 List<SqlParameter> parameters = new List<SqlParameter>
-                 {
+                {
                     new SqlParameter("@UserId", userId)
 
                 };
@@ -360,6 +375,55 @@ namespace AppApi.Repository
 
             return response;
         }
+
+        public RequestResponse InsertDate(ArtistDate request)
+        {
+            RequestResponse response = new RequestResponse();
+
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@UserId", request.UserId)
+                };
+
+                DataTable dtDates = new DataTable();
+                dtDates.Columns.Add(new DataColumn("Date", typeof(DateTime)));
+                foreach (var date in request.Dates)
+                {
+                    DataRow dr = dtDates.NewRow();
+                    dr["Date"] = date;
+                    dtDates.Rows.Add(dr);
+                }
+
+                SqlParameter datesParameter = new SqlParameter("@Dates", SqlDbType.Structured);
+                datesParameter.Value = dtDates;
+                datesParameter.TypeName = "[dbo].[Dates]";
+                parameters.Add(datesParameter);
+
+                int resp = _dbHelper.ExecProcReturnScalar(parameters, "usp_InsertDates");
+                if (resp != 0)
+                {
+                    response.IsSuccessfull = true;
+                    response.Result = resp;
+                }
+                else
+                {
+                    response.IsSuccessfull = false;
+                    response.ErrorMessage = "Dates not inserted!";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccessfull = false;
+                response.ErrorMessage = ex.Message;
+            }
+
+            return response;
+        }
+
+
     }
 }
 
